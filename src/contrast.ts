@@ -36,7 +36,6 @@ export function checkContrast(color1: HexColor | RGB, color2: HexColor | RGB): C
 export function suggestTextColor(backgroundColor: HexColor | RGB): HexColor {
   const rgb = typeof backgroundColor === 'string' ? hexToRgb(backgroundColor) : backgroundColor;
   const luminance = getLuminance(rgb);
-  
-  // Si el fondo es claro, devolver negro; si es oscuro, devolver blanco
-  return luminance > 0.5 ? '#000000' : 'rgba(255, 255, 255, 1)';
+
+  return luminance > 0.179 ? '#000000' : '#ffffff';
 }

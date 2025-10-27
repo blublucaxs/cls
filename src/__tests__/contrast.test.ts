@@ -1,3 +1,5 @@
+
+// src/__tests__/contrast.test.ts
 import { getContrastRatio, checkContrast, suggestTextColor } from '../contrast';
 
 describe('Funciones de contraste', () => {
