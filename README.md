@@ -5,15 +5,15 @@ Librería TypeScript para conversión y manipulación de colores con soporte de 
 ## Instalación
 
 ```bash
-npm install color-utils-ts
+npm install color-utils-lite
 ```
 
 ## Uso
 
 ```typescript
-import colorUtils from 'color-utils-ts';
+import colorUtils from 'color-utils-lite';
 // o importaciones específicas:
-import { hexToRgb, getContrastRatio, lighten } from 'color-utils-ts';
+import { hexToRgb, getContrastRatio, lighten } from 'color-utils-lite';
 
 // Conversiones
 const rgb = colorUtils.hexToRgb('#ff5733');

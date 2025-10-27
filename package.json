@@ -1,5 +1,5 @@
 {
-  "name": "color-utils-ts",
+  "name": "color-utils-lite",
   "version": "1.0.0",
   "description": "Utilidades para conversión y manipulación de colores con soporte de contraste WCAG",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "accessibility",
     "conversion"
   ],
-  "author": "Tu Nombre",
+  "author": "Lemoontt",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
