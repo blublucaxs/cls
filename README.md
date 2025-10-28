@@ -13,6 +13,7 @@ npm i color-utils-lite
 
 ## 🚀 Inicio Rápido
 
+> author Limberg Montes Tancara
 ```typescript
 import { 
   hexToRgb, 
