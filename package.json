@@ -1,6 +1,6 @@
 {
-  "name": "color-utils-ts",
-  "version": "1.0.0",
+  "name": "color-utils-lite",
+  "version": "1.0.3",
   "description": "Utilidades para conversión y manipulación de colores con soporte de contraste WCAG",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "accessibility",
     "conversion"
   ],
-  "author": "Tu Nombre",
+  "author": "Limberg Montes",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",

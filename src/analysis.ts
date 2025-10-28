@@ -1,119 +1,97 @@
-import { RGB, HexColor } from './types';
-import { hexToRgb, rgbToHsl } from './conversions';
+import { HexColor, RGB } from './types';
+import { hexToRgb, hexToHsl } from './conversions';
 
 /**
- * Calcula el brillo percibido (0-255)
+ * Calcula la luminancia relativa de un color
  */
-export function getBrightness(color: HexColor | RGB): number {
-  const rgb = typeof color === 'string' ? hexToRgb(color) : color;
-  return Math.round(0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b);
+function getLuminance(rgb: RGB): number {
+  const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(val => {
+    const v = val / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 /**
  * Determina si un color es claro
+ * @param threshold - Umbral de luminancia (por defecto 0.5)
  */
-export function isLight(color: HexColor | RGB): boolean {
-  return getBrightness(color) > 127.5;
+export function isLight(color: HexColor, threshold: number = 0.5): boolean {
+  const rgb = hexToRgb(color);
+  const luminance = getLuminance(rgb);
+  return luminance > threshold;
+}
+
+
+export function isDark(color: HexColor, threshold: number = 0.5): boolean {
+  return !isLight(color, threshold);
+}
+
+
+export function getBrightness(color: HexColor): number {
+  const rgb = hexToRgb(color);
+  return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
 }
 
 /**
- * Determina si un color es oscuro
+ * Calcula el brillo normalizado (0-1)
  */
-export function isDark(color: HexColor | RGB): boolean {
-  return !isLight(color);
+export function getBrightnessNormalized(color: HexColor): number {
+  return getBrightness(color) / 255;
 }
 
 /**
- * Obtiene el color de texto óptimo (entre dos opciones)
+ * Determina si un color es "vibrante" (saturado)
  */
-export function getReadableTextColor(
-  bgColor: HexColor | RGB,
-  lightColor: HexColor = '#ffffff',
-  darkColor: HexColor = '#000000'
-): HexColor {
-  return isLight(bgColor) ? darkColor : lightColor;
+export function isVibrant(color: HexColor, threshold: number = 50): boolean {
+  const hsl = hexToHsl(color);
+  return hsl.s >= threshold;
 }
 
 /**
- * Calcula la temperatura del color (cálido/frío)
- * @returns Valor entre -1 (frío/azul) y 1 (cálido/rojo)
+ * Determina si un color es gris/monocromático
  */
-export function getTemperature(color: HexColor | RGB): number {
-  const rgb = typeof color === 'string' ? hexToRgb(color) : color;
+export function isGrayscale(color: HexColor, threshold: number = 10): boolean {
+  const hsl = hexToHsl(color);
+  return hsl.s <= threshold;
+}
+
+/**
+ * Obtiene la temperatura del color (cálido/frío)
+ * @returns 'warm', 'cool' o 'neutral'
+ */
+export function getTemperature(color: HexColor): 'warm' | 'cool' | 'neutral' {
+  const hsl = hexToHsl(color);
+  const h = hsl.h;
   
-  // Fórmula simplificada basada en componentes R y B
-  const warmth = (rgb.r - rgb.b) / 255;
-  return Math.max(-1, Math.min(1, warmth));
+  // Cálidos: rojo-amarillo (0-60°)
+  if ((h >= 0 && h <= 60) || h >= 300) return 'warm';
+  
+  // Fríos: cian-azul (180-300°)
+  if (h >= 180 && h < 300) return 'cool';
+  
+  // Neutrales: verde-amarillo verdoso (60-180°)
+  return 'neutral';
 }
 
 /**
- * Determina si el color es cercano al gris (desaturado)
+ * Calcula la distancia euclidiana entre dos colores en RGB
  */
-export function isGrayscale(color: HexColor | RGB, threshold: number = 10): boolean {
-  const hsl = rgbToHsl(typeof color === 'string' ? hexToRgb(color) : color);
-  return hsl.s < threshold;
-}
-
-/**
- * Obtiene la distancia entre dos colores (Delta E simplificado)
- */
-export function getColorDistance(color1: HexColor, color2: HexColor): number {
+export function colorDistance(color1: HexColor, color2: HexColor): number {
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
   
-  const rDiff = rgb1.r - rgb2.r;
-  const gDiff = rgb1.g - rgb2.g;
-  const bDiff = rgb1.b - rgb2.b;
+  const dr = rgb1.r - rgb2.r;
+  const dg = rgb1.g - rgb2.g;
+  const db = rgb1.b - rgb2.b;
   
-  return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+  return Math.sqrt(dr * dr + dg * dg + db * db);
 }
 
 /**
- * Encuentra el color más cercano de una paleta
+ * Determina si dos colores son similares
  */
-export function findClosestColor(targetColor: HexColor, palette: HexColor[]): HexColor {
-  if (palette.length === 0) {
-    throw new Error('La paleta no puede estar vacía');
-  }
-  
-  let closestColor = palette[0];
-  let minDistance = getColorDistance(targetColor, palette[0]);
-  
-  for (let i = 1; i < palette.length; i++) {
-    const distance = getColorDistance(targetColor, palette[i]);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestColor = palette[i];
-    }
-  }
-  
-  return closestColor;
-}
-
-/**
- * Genera un color aleatorio con restricciones opcionales
- */
-export function randomColor(options?: {
-  saturation?: [number, number];
-  lightness?: [number, number];
-  hue?: [number, number];
-}): HexColor {
-  const h = options?.hue
-    ? Math.random() * (options.hue[1] - options.hue[0]) + options.hue[0]
-    : Math.random() * 360;
-  
-  const s = options?.saturation
-    ? Math.random() * (options.saturation[1] - options.saturation[0]) + options.saturation[0]
-    : Math.random() * 100;
-  
-  const l = options?.lightness
-    ? Math.random() * (options.lightness[1] - options.lightness[0]) + options.lightness[0]
-    : Math.random() * 100;
-  
-  const { hslToHex } = require('./conversions');
-  return hslToHex({
-    h: Math.round(h),
-    s: Math.round(s),
-    l: Math.round(l)
-  });
+export function areSimilar(color1: HexColor, color2: HexColor, threshold: number = 50): boolean {
+  return colorDistance(color1, color2) <= threshold;
 }
