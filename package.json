@@ -1,6 +1,6 @@
 {
   "name": "color-utils-lite",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Utilidades para conversión y manipulación de colores con soporte de contraste WCAG",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
