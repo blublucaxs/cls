@@ -1,5 +1,4 @@
 
-// src/__tests__/manipulation.test.ts
 import { lighten, darken, saturate, desaturate } from '../manipulation';
 import { hexToHsl } from '../conversions';
 

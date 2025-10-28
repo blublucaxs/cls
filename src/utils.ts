@@ -7,7 +7,7 @@ import { getContrastRatio } from './contrast';
  * Soporta: hex, rgb(), rgba(), hsl(), hsla(), nombres CSS
  */
 export function parseColor(input: string): RGB | null {
-  // Limpiar espacios
+  // Remover espacios
   const color = input.trim().toLowerCase();
   
   // Hex

@@ -20,7 +20,7 @@
     "accessibility",
     "conversion"
   ],
-  "author": "Lemoontt",
+  "author": "Limberg Montes",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
